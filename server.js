@@ -7,7 +7,7 @@ const typeDefs = gql`
     id: ID
     title: String
     body: String
-    comments: [Comment] 
+    comments(search: String): [Comment] 
     
 
   }
@@ -25,6 +25,7 @@ const typeDefs = gql`
     comments(id: ID): [Comment]
     post(id: ID): Post
     comment(id: ID): Comment
+    commentByName(name: String): Comment
   }
 `
 
@@ -38,16 +39,21 @@ const resolvers = {
     // },
     post: (_, { id }, { dataSources }) => {
       return dataSources.postsAPI.getPostById({ id: id });
-    }
+    },
     // ,
     // comments: (_, { id }, { dataSources }) => {
     //   return dataSources.postsAPI.getCommentsById({ id: id });
+    // },
+    // commentByName: (_, { name }, { dataSources }) => {
+    //   return dataSources.postsAPI.getCommentsByName({ name: name });
     // }
+
+
   },
 
   Post: {
-    comments: (post, __, { dataSources }) => {
-      return dataSources.postsAPI.getCommentsById({ id: post.id });
+    comments: (post, {search}, { dataSources }) => {
+      return dataSources.postsAPI.getCommentsById({ id: post.id, search: search});
     }
  
   }

@@ -10,8 +10,8 @@ class PostsAPI extends RESTDataSource {
 
   async getPosts() {
     // Send a GET request to the specified endpoint
-    return this.get(`posts/`);
-    
+    const posts = await this.get(`posts/`)
+    return(posts)  
   }
 
   // async getComments() {
@@ -46,16 +46,38 @@ class PostsAPI extends RESTDataSource {
 
 
 
+  // async getPostById({ id }) {
+  //   const response = await this.get('posts', { id: id });
+  //   return response[0]
+  // }
+
+  // async getCommentsById({ id }) {
+  //   const response = await this.get('comments', { postId: id });
+  //   // return this.commentReducer(response[1]);
+  //   return response
+  // }
+
+
   async getPostById({ id }) {
-    const response = await this.get('posts', { id: id });
-    return response[0]
+    const posts = await this.get('posts/');
+    const post = posts.find((post => post.id == id))
+    return post
   }
 
-  async getCommentsById({ id }) {
-    const response = await this.get('comments', { postId: id });
-    // return this.commentReducer(response[1]);
-    return response
+  async getCommentsById({ id, search }) {
+    const comments = await this.get('comments/');
+    const filtered = comments.filter((comment => comment.postId == id ))
+
+    if(!search){
+      return filtered
+    }
+    const searched = filtered.filter((comment) => comment.name.includes(search) || comment.email.includes(search) || comment.body.includes(search) )
+    return searched
   }
+
+
+
+
 
 
 
