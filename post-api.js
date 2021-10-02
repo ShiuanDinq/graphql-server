@@ -14,48 +14,6 @@ class PostsAPI extends RESTDataSource {
     return(posts)  
   }
 
-  // async getComments() {
-  //   // Send a GET request to the specified endpoint
-  //   return this.get(`comments/`);
-  // }
-
-  // postReducer(post) {
-  //   return {
-  //     id: post.id || 0,
-  //     title: post.title || "",
-  //     body: post.body || "",
-  //     comments: {
-  //       id: post.comment.id || 0,
-  //       name: post.comment.name || "",
-  //       body: post.comment.body || "",
-  //       email: post.comment.email || "",
-  //     }
-
-  //   };
-  // }
-
-  // commentReducer(comment) {
-  //   return {
-  //     id: comment.id || 0,
-  //     name: comment.name || "",
-  //     body: comment.body || "",
-  //     postId: comment.postId || "",
-
-  //   };
-  // }
-
-
-
-  // async getPostById({ id }) {
-  //   const response = await this.get('posts', { id: id });
-  //   return response[0]
-  // }
-
-  // async getCommentsById({ id }) {
-  //   const response = await this.get('comments', { postId: id });
-  //   // return this.commentReducer(response[1]);
-  //   return response
-  // }
 
 
   async getPostById({ id }) {
@@ -64,15 +22,46 @@ class PostsAPI extends RESTDataSource {
     return post
   }
 
-  async getCommentsById({ id, search }) {
+  async getCommentsById({ id, name, body, email }) {
     const comments = await this.get('comments/');
     const filtered = comments.filter((comment => comment.postId == id ))
 
-    if(!search){
-      return filtered
+    if(name && body && email){
+      const searched = filtered.filter((comment) => comment.name.includes(name) && comment.email.includes(email) && comment.body.includes(body) )
+      return searched
     }
-    const searched = filtered.filter((comment) => comment.name.includes(search) || comment.email.includes(search) || comment.body.includes(search) )
-    return searched
+
+    if(name && body ){
+      const searched = filtered.filter((comment) => comment.name.includes(name) && comment.body.includes(body))
+      return searched
+    }
+
+    if(name && email ){
+      const searched = filtered.filter((comment) => comment.name.includes(name) && comment.email.includes(email))
+      return searched
+    }
+
+    if(body && email ){
+      const searched = filtered.filter((comment) => comment.body.includes(body) && comment.email.includes(email))
+      return searched
+    }
+
+    if(name){
+      const searched = filtered.filter((comment) => comment.name.includes(name))
+      return searched
+    }
+
+    if(body){
+      const searched = filtered.filter((comment) => comment.body.includes(body))
+      return searched
+    }
+
+    if(email){
+      const searched = filtered.filter((comment) => comment.email.includes(email))
+      return searched
+    }
+    
+    return filtered
   }
 
 

@@ -4,12 +4,10 @@ const PostsAPI = require('./post-api.js');
 
 const typeDefs = gql`
   type Post {
-    id: ID
+    id: ID!
     title: String
     body: String
-    comments(search: String): [Comment] 
-    
-
+    comments(name: String, body: String, email: String): [Comment!] 
   }
 
   type Comment {
@@ -21,11 +19,8 @@ const typeDefs = gql`
   }
 
   type Query {
-    posts: [Post]
-    comments(id: ID): [Comment]
-    post(id: ID): Post
-    comment(id: ID): Comment
-    commentByName(name: String): Comment
+    posts: [Post!]!
+    post(id: ID!): Post
   }
 `
 
@@ -34,26 +29,16 @@ const resolvers = {
     posts: async (_, __, {dataSources}) => {
       return dataSources.postsAPI.getPosts();
     },
-    // comments: async (_, __, {dataSources}) => {
-    //   return dataSources.postsAPI.getComments();
-    // },
+
     post: (_, { id }, { dataSources }) => {
       return dataSources.postsAPI.getPostById({ id: id });
     },
-    // ,
-    // comments: (_, { id }, { dataSources }) => {
-    //   return dataSources.postsAPI.getCommentsById({ id: id });
-    // },
-    // commentByName: (_, { name }, { dataSources }) => {
-    //   return dataSources.postsAPI.getCommentsByName({ name: name });
-    // }
-
 
   },
 
   Post: {
-    comments: (post, {search}, { dataSources }) => {
-      return dataSources.postsAPI.getCommentsById({ id: post.id, search: search});
+    comments: (post, {name, body, email}, { dataSources }) => {
+      return dataSources.postsAPI.getCommentsById({ id: post.id, name: name, body: body, email: email});
     }
  
   }
@@ -62,20 +47,6 @@ const resolvers = {
 }
 
 
-
-// const resolvers = {
-//   Query: {
-//     movie: async (_, { id }, { dataSources }) => {
-//       return dataSources.moviesAPI.getMovie(id);
-//     },
-//     mostViewedMovies: async (_, __, { dataSources }) => {
-//       return dataSources.moviesAPI.getMostViewedMovies();
-//     },
-//     favorites: async (_, __, { dataSources }) => {
-//       return dataSources.personalizationAPI.getFavorites();
-//     },
-//   },
-// };
 
 const server = new ApolloServer({
   typeDefs,
