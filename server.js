@@ -64,6 +64,7 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,
   dataSources: () => {
     return {
       postsAPI: new PostsAPI(),
