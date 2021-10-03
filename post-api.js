@@ -20,7 +20,6 @@ class PostsAPI extends RESTDataSource {
          throw new UserInputError(
            `Invalid limit value (min value: ${min_value}, max: ${max_value})`
          );
-
        }
        first = args.first;
      }
@@ -101,13 +100,6 @@ class PostsAPI extends RESTDataSource {
     
     return filtered
   }
-
-
-
-
-
-
-
 }
 
 module.exports = PostsAPI;
