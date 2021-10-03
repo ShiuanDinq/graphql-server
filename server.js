@@ -1,7 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server')
 const PostsAPI = require('./post-api.js');
 
-
 const typeDefs = gql`
   type Post {
     id: ID!
@@ -42,13 +41,8 @@ const typeDefs = gql`
   }
 `
 
-
-
-
 const resolvers = {
   Query: {
-   
-
     posts: async (_, {first, after}, {dataSources}) => {
       return dataSources.postsAPI.getPosts({first: first, after: after});
     },
@@ -64,15 +58,8 @@ const resolvers = {
       return dataSources.postsAPI.getCommentsById({ id: post.id, name: name, body: body, email: email});
     }
  
-  }
-
-
-   
-    
-  
+  } 
 }
-
-
 
 const server = new ApolloServer({
   typeDefs,
