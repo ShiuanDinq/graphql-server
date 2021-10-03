@@ -1,4 +1,5 @@
 const { RESTDataSource } = require('apollo-datasource-rest');
+const { UserInputError } = require('apollo-server-errors')
 
 class PostsAPI extends RESTDataSource {
   constructor() {
@@ -8,14 +9,51 @@ class PostsAPI extends RESTDataSource {
     this.baseURL = 'https://jsonplaceholder.typicode.com/';
   }
 
-  async getPosts() {
-    // Send a GET request to the specified endpoint
-    const posts = await this.get(`posts/`)
-    return(posts)  
-  }
+  async getPosts(args) {
+    const list = await this.get(`posts/`)
+    // initialise first
+     let first = 5;
+     if (args.first !== undefined) {
+       const min_value = 1;
+       const max_value = 25;
+       if (args.first < min_value || args.first > max_value) {
+         throw new UserInputError(
+           `Invalid limit value (min value: ${min_value}, max: ${max_value})`
+         );
 
-
-
+       }
+       first = args.first;
+     }
+     // initialise cursor
+     let after = 0;
+     if (args.after !== undefined) {
+       const index = list.findIndex((item) => item.id == args.after);
+       if (index === -1) {
+         throw new UserInputError(`Invalid after value: cursor not found.`);
+       }
+       after = index + 1;
+       if (after === list.length) {
+         throw new UserInputError(
+           `Invalid after value: no items after provided cursor.`
+         );
+       }
+     }
+   
+     const posts = list.slice(after, after + first);
+     const lastPost = posts[posts.length - 1];
+   
+     return {
+       pageInfo: {
+         endCursor: lastPost.id,
+         hasNextPage: after + first < list.length,
+       },
+       edges: posts.map((post) => ({
+         cursor: post.id,
+         node: post,
+       })),
+     };
+   }
+   
   async getPostById({ id }) {
     const posts = await this.get('posts/');
     const post = posts.find((post => post.id == id))

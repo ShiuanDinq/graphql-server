@@ -18,16 +18,39 @@ const typeDefs = gql`
     postId: ID
   }
 
+  type Edge {
+    cursor: String
+    node: Post
+  }
+  type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean
+  }
+  type Response {
+    edges: [Edge]
+    pageInfo: PageInfo
+  }
+
+
   type Query {
-    posts: [Post!]!
+    posts(first: Int, after: String): Response
     post(id: ID!): Post
+  }
+
+  schema {
+    query: Query
   }
 `
 
+
+
+
 const resolvers = {
   Query: {
-    posts: async (_, __, {dataSources}) => {
-      return dataSources.postsAPI.getPosts();
+   
+
+    posts: async (_, {first, after}, {dataSources}) => {
+      return dataSources.postsAPI.getPosts({first: first, after: after});
     },
 
     post: (_, { id }, { dataSources }) => {
@@ -43,6 +66,9 @@ const resolvers = {
  
   }
 
+
+   
+    
   
 }
 
